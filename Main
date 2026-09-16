@@ -1,0 +1,831 @@
+```python
+import speech_recognition as sr
+import cv2
+import time
+import numpy as np
+from datetime import datetime
+from geopy.geocoders import Nominatim
+from sklearn.ensemble import RandomForestClassifier
+import os
+
+
+# ============================================================
+# CONFIGURAÇÕES DO SISTEMA
+# ============================================================
+
+PALAVRA_ATIVACAO = "ok siri"
+
+COMANDOS = {
+    "registrar parada": "REGISTRAR_PARADA",
+    "marcar ponto turístico": "PONTO_TURISTICO",
+    "preciso abastecer": "ABASTECER",
+    "como está o trecho": "TRECHO"
+}
+
+# Categorias utilizadas pelo sistema de visão
+CLASSES_IMAGEM = [
+    "estrada",
+    "posto de combustível",
+    "restaurante",
+    "natureza",
+    "ponto turístico"
+]
+
+
+# ============================================================
+# LOCAIS TURÍSTICOS DE INDAIATUBA
+# ============================================================
+
+PONTOS_TURISTICOS = {
+    "parque ecológico": {
+        "categoria": "natureza",
+        "descricao": "Parque Ecológico de Indaiatuba"
+    },
+
+    "parque do mirim": {
+        "categoria": "natureza",
+        "descricao": "Parque do Mirim"
+    },
+
+    "parque da criança": {
+        "categoria": "ponto turístico",
+        "descricao": "Parque da Criança"
+    },
+
+    "parque temático": {
+        "categoria": "ponto turístico",
+        "descricao": "Parque Temático"
+    },
+
+    "praça rui barbosa": {
+        "categoria": "ponto turístico",
+        "descricao": "Praça Rui Barbosa"
+    },
+
+    "casarão pau preto": {
+        "categoria": "ponto turístico",
+        "descricao": "Casarão Pau Preto"
+    },
+
+    "museu ferroviário": {
+        "categoria": "ponto turístico",
+        "descricao": "Museu Ferroviário"
+    },
+
+    "museu da água": {
+        "categoria": "ponto turístico",
+        "descricao": "Museu da Água"
+    },
+
+    "bosque do saber": {
+        "categoria": "natureza",
+        "descricao": "Bosque do Saber"
+    }
+}
+
+
+# ============================================================
+# MODELO RANDOM FOREST
+# ============================================================
+
+modelo_rf = RandomForestClassifier(
+    n_estimators=100,
+    random_state=42
+)
+
+# Enquanto não houver dataset de treinamento,
+# o programa utiliza regras simples.
+modelo_treinado = False
+
+
+# ============================================================
+# VARIÁVEIS DO SISTEMA
+# ============================================================
+
+diario = []
+fotos = []
+
+geolocator = Nominatim(
+    user_agent="copiloto_inteligente_indaiatuba"
+)
+
+
+# ============================================================
+# FUNÇÕES DE VOZ
+# ============================================================
+
+def ouvir_microfone():
+
+    reconhecedor = sr.Recognizer()
+
+    with sr.Microphone() as source:
+
+        print("\n🎧 Aguardando comando...")
+        print("Fale: 'Ok Siri' + seu comando.")
+
+        # Reduz ruídos do ambiente
+        reconhecedor.adjust_for_ambient_noise(
+            source,
+            duration=0.5
+        )
+
+        try:
+
+            audio = reconhecedor.listen(
+                source,
+                timeout=5,
+                phrase_time_limit=8
+            )
+
+        except sr.WaitTimeoutError:
+
+            print("⏱ Nenhuma fala detectada.")
+            return ""
+
+    try:
+
+        frase = reconhecedor.recognize_google(
+            audio,
+            language="pt-BR"
+        ).lower()
+
+        print("🗣 Você disse:", frase)
+
+        return frase
+
+    except sr.UnknownValueError:
+
+        print("⚠ Não consegui entender o áudio.")
+
+        return ""
+
+    except sr.RequestError:
+
+        print("⚠ Erro no serviço de reconhecimento de voz.")
+
+        return ""
+
+
+# ============================================================
+# EXTRAÇÃO DO COMANDO
+# ============================================================
+
+def extrair_comando(frase):
+
+    for texto_comando in COMANDOS.keys():
+
+        if texto_comando in frase:
+
+            return texto_comando
+
+    return None
+
+
+# ============================================================
+# ANÁLISE SIMPLES DA EMOÇÃO
+# ============================================================
+
+def analisar_emocao(frase):
+
+    if "cansado" in frase or "cansada" in frase:
+
+        return "CANSADO", 0.82
+
+    if "animado" in frase or "animada" in frase:
+
+        return "ANIMADO", 0.80
+
+    if "tenso" in frase or "tensa" in frase:
+
+        return "TENSO", 0.78
+
+    if "estressado" in frase or "estressada" in frase:
+
+        return "ESTRESSADO", 0.85
+
+    return "NEUTRO", 0.65
+
+
+# ============================================================
+# LOCALIZAÇÃO
+# ============================================================
+
+def obter_localizacao():
+
+    # --------------------------------------------------------
+    # Nesta versão estamos utilizando uma localização
+    # aproximada/simulada para testes.
+    #
+    # Em uma versão futura, estas coordenadas podem vir de
+    # um GPS real.
+    # --------------------------------------------------------
+
+    latitude = -23.0900
+    longitude = -47.2180
+
+    try:
+
+        local = geolocator.reverse(
+            f"{latitude}, {longitude}",
+            language="pt-BR"
+        )
+
+        if local:
+
+            endereco = local.raw.get(
+                "address",
+                {}
+            )
+
+            cidade = endereco.get(
+                "city",
+                endereco.get(
+                    "town",
+                    "Indaiatuba"
+                )
+            )
+
+            nome_local = cidade
+
+        else:
+
+            nome_local = "Indaiatuba"
+
+    except Exception:
+
+        nome_local = "Indaiatuba"
+
+    return latitude, longitude, nome_local
+
+
+# ============================================================
+# IDENTIFICAÇÃO DE PONTO TURÍSTICO
+# ============================================================
+
+def identificar_ponto_turistico(frase):
+
+    frase = frase.lower()
+
+    for nome, dados in PONTOS_TURISTICOS.items():
+
+        if nome in frase:
+
+            return dados["descricao"]
+
+    return None
+
+
+# ============================================================
+# CAPTURA DE IMAGEM
+# ============================================================
+
+def capturar_imagem():
+
+    cam = cv2.VideoCapture(0)
+
+    if not cam.isOpened():
+
+        print("⚠ Não foi possível acessar a câmera.")
+
+        return None, "desconhecido"
+
+    ret, frame = cam.read()
+
+    cam.release()
+
+    if not ret:
+
+        print("⚠ Erro ao capturar imagem.")
+
+        return None, "desconhecido"
+
+    # Cria a pasta de fotos
+    if not os.path.exists("fotos"):
+
+        os.makedirs("fotos")
+
+    caminho = os.path.join(
+        "fotos",
+        f"registro_{len(fotos) + 1:03d}.jpg"
+    )
+
+    cv2.imwrite(
+        caminho,
+        frame
+    )
+
+    fotos.append(caminho)
+
+    # --------------------------------------------------------
+    # Classificação provisória.
+    #
+    # Em uma versão mais avançada, essa parte poderá utilizar
+    # uma rede neural ou modelo de visão computacional.
+    # --------------------------------------------------------
+
+    classe = "natureza"
+
+    return caminho, classe
+
+
+# ============================================================
+# RANDOM FOREST - DECISÃO
+# ============================================================
+
+def decidir_acao(variaveis):
+
+    if not modelo_treinado:
+
+        hora = variaveis[0]
+        tempo_viagem = variaveis[1]
+        distancia = variaveis[2]
+        indice_classe = variaveis[3]
+        emocao_conf = variaveis[4]
+
+        # Caso a viagem esteja muito longa
+        if tempo_viagem > 150:
+
+            return "DESCANSAR"
+
+        # Caso a distância desde o último abastecimento
+        # seja grande
+        if distancia > 200:
+
+            return "ABASTECER"
+
+        # Caso exista confiança elevada em uma emoção
+        # que indique necessidade de atenção
+        if emocao_conf > 0.85:
+
+            return "VERIFICAR ESTADO DO MOTORISTA"
+
+        return "CONTINUAR"
+
+    entrada = np.array(
+        variaveis
+    ).reshape(1, -1)
+
+    return modelo_rf.predict(entrada)[0]
+
+
+# ============================================================
+# REGISTRO DO DIÁRIO DE BORDO
+# ============================================================
+
+def registrar_diario(
+    comando_texto,
+    emocao,
+    confianca,
+    classe_img,
+    foto,
+    nome_local,
+    lat,
+    lon,
+    decisao,
+    ponto_turistico=None
+):
+
+    registro = {
+
+        "horario":
+            datetime.now().strftime(
+                "%d/%m/%Y %H:%M"
+            ),
+
+        "local":
+            nome_local,
+
+        "coords":
+            (lat, lon),
+
+        "comando":
+            comando_texto,
+
+        "emocao":
+            emocao,
+
+        "confianca_emocao":
+            round(confianca * 100, 1),
+
+        "classe_imagem":
+            classe_img,
+
+        "foto":
+            foto,
+
+        "decisao":
+            decisao,
+
+        "ponto_turistico":
+            ponto_turistico
+    }
+
+    diario.append(registro)
+
+    print("\n")
+    print("=" * 60)
+    print(
+        f"📘 DIÁRIO DE BORDO · Registro "
+        f"{len(diario):03d}"
+    )
+    print("=" * 60)
+
+    print(
+        f"Horário: {registro['horario']}"
+    )
+
+    print(
+        f"Local: {registro['local']}"
+    )
+
+    print(
+        f"Coordenadas: "
+        f"{lat}, {lon}"
+    )
+
+    print(
+        f"Comando reconhecido: "
+        f"\"{registro['comando']}\""
+    )
+
+    print(
+        f"Estado da voz: "
+        f"{registro['emocao']} — "
+        f"{registro['confianca_emocao']}%"
+    )
+
+    print(
+        f"Imagem classificada: "
+        f"{registro['classe_imagem']}"
+    )
+
+    if ponto_turistico:
+
+        print(
+            f"📍 Ponto turístico: "
+            f"{ponto_turistico}"
+        )
+
+    print(
+        f"🤖 Decisão do sistema: "
+        f"{registro['decisao']}"
+    )
+
+    print(
+        f"📷 Foto associada: "
+        f"{registro['foto']}"
+    )
+
+    print("=" * 60)
+
+
+# ============================================================
+# RESUMO FINAL DA VIAGEM
+# ============================================================
+
+def mostrar_resumo():
+
+    if not diario:
+
+        print(
+            "\nNenhum registro foi realizado."
+        )
+
+        return
+
+    # Valores simulados para demonstração
+    distancia_total = np.random.randint(
+        50,
+        400
+    )
+
+    paradas = len(diario)
+
+    locais_registrados = len(
+        set(
+            d["local"]
+            for d in diario
+        )
+    )
+
+    emocao_predominante = max(
+
+        set(
+            d["emocao"]
+            for d in diario
+        ),
+
+        key=[
+            d["emocao"]
+            for d in diario
+        ].count
+    )
+
+    maior_trecho_sem_parada = np.random.randint(
+        30,
+        150
+    )
+
+    print("\n")
+    print("=" * 60)
+    print("🚗 RESUMO DA VIAGEM")
+    print("=" * 60)
+
+    print(
+        f"Distância total: "
+        f"{distancia_total} km"
+    )
+
+    print(
+        f"Paradas realizadas: "
+        f"{paradas}"
+    )
+
+    print(
+        f"Locais registrados: "
+        f"{locais_registrados}"
+    )
+
+    print(
+        f"Emoção predominante: "
+        f"{emocao_predominante}"
+    )
+
+    print(
+        f"Maior trecho sem parada: "
+        f"{maior_trecho_sem_parada} km"
+    )
+
+    print("\n📷 Fotos em ordem cronológica:")
+
+    for registro in diario:
+
+        print(
+            f"- {registro['horario']} | "
+            f"{registro['local']} | "
+            f"{registro['foto']} | "
+            f"{registro['decisao']}"
+        )
+
+    print("=" * 60)
+
+
+# ============================================================
+# MOSTRAR PONTOS TURÍSTICOS
+# ============================================================
+
+def mostrar_pontos_turisticos():
+
+    print("\n")
+    print("=" * 60)
+    print("📍 PONTOS TURÍSTICOS DE INDAIATUBA")
+    print("=" * 60)
+
+    for nome, dados in PONTOS_TURISTICOS.items():
+
+        print(
+            f"• {dados['descricao']} "
+            f"→ {dados['categoria']}"
+        )
+
+    print("=" * 60)
+
+
+# ============================================================
+# LOOP PRINCIPAL
+# ============================================================
+
+def main():
+
+    print("\n")
+    print("=" * 60)
+    print("🚗 COPILOTO INTELIGENTE DE VIAGEM")
+    print("=" * 60)
+
+    print(
+        f"Palavra de ativação: "
+        f"\"{PALAVRA_ATIVACAO}\""
+    )
+
+    print(
+        "Cidade configurada: Indaiatuba - SP"
+    )
+
+    print(
+        "\nExemplos de comandos:"
+    )
+
+    print(
+        "• Ok Siri, registrar parada"
+    )
+
+    print(
+        "• Ok Siri, marcar ponto turístico"
+    )
+
+    print(
+        "• Ok Siri, preciso abastecer"
+    )
+
+    print(
+        "• Ok Siri, como está o trecho"
+    )
+
+    print(
+        "• encerrar viagem"
+    )
+
+    mostrar_pontos_turisticos()
+
+    try:
+
+        while True:
+
+            frase = ouvir_microfone()
+
+            if not frase:
+
+                continue
+
+            # ------------------------------------------------
+            # ENCERRAMENTO
+            # ------------------------------------------------
+
+            if "encerrar viagem" in frase:
+
+                mostrar_resumo()
+
+                break
+
+            # ------------------------------------------------
+            # PALAVRA DE ATIVAÇÃO
+            # ------------------------------------------------
+
+            if PALAVRA_ATIVACAO not in frase:
+
+                print(
+                    "🔇 Palavra de ativação não encontrada."
+                )
+
+                continue
+
+            print(
+                "🔵 Palavra de ativação detectada!"
+            )
+
+            # ------------------------------------------------
+            # IDENTIFICAR COMANDO
+            # ------------------------------------------------
+
+            comando_texto = extrair_comando(
+                frase
+            )
+
+            if not comando_texto:
+
+                print(
+                    "⚠ Nenhum comando válido encontrado."
+                )
+
+                continue
+
+            print(
+                f"🗣 Comando reconhecido: "
+                f"{comando_texto}"
+            )
+
+            # ------------------------------------------------
+            # 1. LOCALIZAÇÃO
+            # ------------------------------------------------
+
+            lat, lon, nome_local = (
+                obter_localizacao()
+            )
+
+            print(
+                f"📍 Local atual: "
+                f"{nome_local}"
+            )
+
+            # ------------------------------------------------
+            # 2. IMAGEM
+            # ------------------------------------------------
+
+            foto, classe_img = (
+                capturar_imagem()
+            )
+
+            # ------------------------------------------------
+            # 3. EMOÇÃO
+            # ------------------------------------------------
+
+            emocao, confianca = (
+                analisar_emocao(frase)
+            )
+
+            # ------------------------------------------------
+            # 4. VERIFICAR PONTO TURÍSTICO
+            # ------------------------------------------------
+
+            ponto_turistico = (
+                identificar_ponto_turistico(
+                    frase
+                )
+            )
+
+            # ------------------------------------------------
+            # 5. VARIÁVEIS DO RANDOM FOREST
+            # ------------------------------------------------
+
+            hora_atual = datetime.now().hour
+
+            tempo_viagem_min = (
+                len(diario) * 30
+            )
+
+            distancia_percorrida = np.random.randint(
+                10,
+                300
+            )
+
+            indice_classe = (
+                CLASSES_IMAGEM.index(
+                    classe_img
+                )
+            )
+
+            variaveis = [
+
+                hora_atual,
+
+                tempo_viagem_min,
+
+                distancia_percorrida,
+
+                indice_classe,
+
+                confianca
+            ]
+
+            # ------------------------------------------------
+            # 6. TOMADA DE DECISÃO
+            # ------------------------------------------------
+
+            decisao = decidir_acao(
+                variaveis
+            )
+
+            # ------------------------------------------------
+            # 7. REGISTRO
+            # ------------------------------------------------
+
+            registrar_diario(
+
+                comando_texto=
+                    comando_texto,
+
+                emocao=
+                    emocao,
+
+                confianca=
+                    confianca,
+
+                classe_img=
+                    classe_img,
+
+                foto=
+                    foto,
+
+                nome_local=
+                    nome_local,
+
+                lat=
+                    lat,
+
+                lon=
+                    lon,
+
+                decisao=
+                    decisao,
+
+                ponto_turistico=
+                    ponto_turistico
+            )
+
+    except KeyboardInterrupt:
+
+        print(
+            "\n\n🛑 Sistema encerrado pelo usuário."
+        )
+
+        mostrar_resumo()
+
+
+# ============================================================
+# INÍCIO DO PROGRAMA
+# ============================================================
+
+if __name__ == "__main__":
+
+    main()
+```
