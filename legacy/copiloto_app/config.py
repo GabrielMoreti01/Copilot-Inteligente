@@ -1,6 +1,4 @@
-from copiloto_app.settings import WAKE_WORD
-
-PALAVRA_ATIVACAO = WAKE_WORD
+PALAVRA_ATIVACAO = "ok siri"
 
 COMANDOS = {
     "registrar parada": "REGISTRAR_PARADA",

@@ -1,0 +1,106 @@
+{
+  "version": "rf-sintetico-v1-149b87a451fb",
+  "dataset_sha256": "149b87a451fba67bb973c6b7b1d052d073e8d7e1204346077e7b560707d01870",
+  "seed": 42,
+  "rows": 2400,
+  "train": 1800,
+  "test": 600,
+  "group_overlap": 0,
+  "distribution": {
+    "ALIMENTAR-SE": 504,
+    "REGISTRAR PONTO TURÍSTICO": 559,
+    "CONTINUAR": 700,
+    "DESCANSAR": 541,
+    "AVALIAR ABASTECIMENTO": 96
+  },
+  "classes": [
+    "ALIMENTAR-SE",
+    "AVALIAR ABASTECIMENTO",
+    "CONTINUAR",
+    "DESCANSAR",
+    "REGISTRAR PONTO TURÍSTICO"
+  ],
+  "report": {
+    "ALIMENTAR-SE": {
+      "precision": 0.9555555555555556,
+      "recall": 0.9555555555555556,
+      "f1-score": 0.9555555555555556,
+      "support": 135.0
+    },
+    "AVALIAR ABASTECIMENTO": {
+      "precision": 0.8888888888888888,
+      "recall": 0.8888888888888888,
+      "f1-score": 0.8888888888888888,
+      "support": 27.0
+    },
+    "CONTINUAR": {
+      "precision": 0.9617834394904459,
+      "recall": 0.9096385542168675,
+      "f1-score": 0.934984520123839,
+      "support": 166.0
+    },
+    "DESCANSAR": {
+      "precision": 0.9262295081967213,
+      "recall": 1.0,
+      "f1-score": 0.9617021276595744,
+      "support": 113.0
+    },
+    "REGISTRAR PONTO TURÍSTICO": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 159.0
+    },
+    "accuracy": 0.96,
+    "macro avg": {
+      "precision": 0.9464914784263223,
+      "recall": 0.9508165997322624,
+      "f1-score": 0.9482262184455716,
+      "support": 600.0
+    },
+    "weighted avg": {
+      "precision": 0.9605333089694058,
+      "recall": 0.96,
+      "f1-score": 0.959799617943482,
+      "support": 600.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      129,
+      0,
+      3,
+      3,
+      0
+    ],
+    [
+      0,
+      24,
+      3,
+      0,
+      0
+    ],
+    [
+      6,
+      3,
+      151,
+      6,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      113,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      159
+    ]
+  ],
+  "limitation": "Cenários sintéticos rotulados por regras. Não comprova desempenho em viagens reais."
+}
