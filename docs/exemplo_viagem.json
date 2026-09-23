@@ -1,0 +1,292 @@
+{
+  "viagem": {
+    "id": "81cf35f0-15e7-44db-aadf-318c98a098b1",
+    "nome": "Exemplo sintético da documentação",
+    "modo": "demo",
+    "palavra": "rota viva",
+    "inicio": "2026-09-23T18:07:02.895651+00:00",
+    "fim": "2026-09-23T22:02:02.895651+00:00"
+  },
+  "registros": [
+    {
+      "id": "c808ec82-dc03-4aec-8a8f-816b19daaa31",
+      "viagem_id": "81cf35f0-15e7-44db-aadf-318c98a098b1",
+      "horario": "2026-09-23T18:27:02.895651+00:00",
+      "comando": "como está o trecho",
+      "transcricao": "rota viva, como está o trecho",
+      "texto_origem": "digitado",
+      "emocao": {
+        "valor": "NEUTRO",
+        "score": 0.8,
+        "origem": "simulado",
+        "modelo": null
+      },
+      "imagem": {
+        "valor": "estrada",
+        "score": null,
+        "origem": "simulado",
+        "modelo": null
+      },
+      "local": "Indaiatuba — SP",
+      "coords": [
+        -23.09,
+        -47.218
+      ],
+      "local_origem": "simulado",
+      "distancia_km": 15,
+      "distancia_origem": "simulado",
+      "tempo_origem": "simulado",
+      "ponto_turistico": null,
+      "parada_realizada": false,
+      "foto": null,
+      "audio": null,
+      "recomendacao": {
+        "acao": "CONTINUAR",
+        "score": 0.8791666666666667,
+        "origem": "random_forest",
+        "modelo": "rf-sintetico-v1-149b87a451fb",
+        "entradas": {
+          "hora": 15,
+          "tempo_viagem_min": 20.0,
+          "distancia_km": 15,
+          "confianca_emocao": 0.8,
+          "paradas": 0,
+          "tempo_sem_parada_min": 20.0,
+          "classe_imagem": "estrada",
+          "emocao": "NEUTRO"
+        },
+        "explicacao": {
+          "base": 0.1984027777777778,
+          "contribuicoes": {
+            "classe_imagem": 0.38282863650414756,
+            "confianca_emocao": -0.0070585848350534375,
+            "distancia_km": 0.04877518830085521,
+            "emocao": 0.07511398095194505,
+            "hora": 0.013178011899843845,
+            "paradas": 0.00012081390758962455,
+            "tempo_sem_parada_min": 0.10680023398690291,
+            "tempo_viagem_min": 0.061005608172658196
+          },
+          "metodo": "Decomposição local dos caminhos das árvores: base + contribuições = score. Não representa causalidade ou probabilidade calibrada."
+        }
+      },
+      "avisos": [
+        "Registro de demonstração/teste: o fluxo completo com áudio e imagem reais ainda não foi validado neste evento."
+      ],
+      "fluxo_completo_real": false
+    },
+    {
+      "id": "a84fbb45-98d9-4c93-9ceb-da4169bbee14",
+      "viagem_id": "81cf35f0-15e7-44db-aadf-318c98a098b1",
+      "horario": "2026-09-23T21:07:02.895651+00:00",
+      "comando": "registrar parada",
+      "transcricao": "rota viva, registrar parada",
+      "texto_origem": "digitado",
+      "emocao": {
+        "valor": "IRRITADO",
+        "score": 0.8,
+        "origem": "simulado",
+        "modelo": null
+      },
+      "imagem": {
+        "valor": "posto de combustível",
+        "score": null,
+        "origem": "simulado",
+        "modelo": null
+      },
+      "local": "Indaiatuba — SP",
+      "coords": [
+        -23.09,
+        -47.218
+      ],
+      "local_origem": "simulado",
+      "distancia_km": 165,
+      "distancia_origem": "simulado",
+      "tempo_origem": "simulado",
+      "ponto_turistico": null,
+      "parada_realizada": true,
+      "foto": null,
+      "audio": null,
+      "recomendacao": {
+        "acao": "DESCANSAR",
+        "score": 0.9560897435897435,
+        "origem": "random_forest",
+        "modelo": "rf-sintetico-v1-149b87a451fb",
+        "entradas": {
+          "hora": 18,
+          "tempo_viagem_min": 180.0,
+          "distancia_km": 165,
+          "confianca_emocao": 0.8,
+          "paradas": 0,
+          "tempo_sem_parada_min": 180.0,
+          "classe_imagem": "posto de combustível",
+          "emocao": "IRRITADO"
+        },
+        "explicacao": {
+          "base": 0.20045370370370375,
+          "contribuicoes": {
+            "classe_imagem": -0.03111307602261164,
+            "confianca_emocao": 0.07339268949489133,
+            "distancia_km": -0.0024908628091977144,
+            "emocao": 0.16996572164173693,
+            "hora": 0.05004541194626606,
+            "paradas": 0.0107362150366965,
+            "tempo_sem_parada_min": 0.47482346267817943,
+            "tempo_viagem_min": 0.01027647792007904
+          },
+          "metodo": "Decomposição local dos caminhos das árvores: base + contribuições = score. Não representa causalidade ou probabilidade calibrada."
+        }
+      },
+      "avisos": [
+        "Registro de demonstração/teste: o fluxo completo com áudio e imagem reais ainda não foi validado neste evento."
+      ],
+      "fluxo_completo_real": false
+    },
+    {
+      "id": "c9278b9f-2016-4aa2-ab08-9f2742d02276",
+      "viagem_id": "81cf35f0-15e7-44db-aadf-318c98a098b1",
+      "horario": "2026-09-23T21:32:02.895651+00:00",
+      "comando": "marcar ponto turístico",
+      "transcricao": "rota viva, marcar ponto turístico",
+      "texto_origem": "digitado",
+      "emocao": {
+        "valor": "ANIMADO",
+        "score": 0.8,
+        "origem": "simulado",
+        "modelo": null
+      },
+      "imagem": {
+        "valor": "ponto turístico",
+        "score": null,
+        "origem": "simulado",
+        "modelo": null
+      },
+      "local": "Indaiatuba — SP",
+      "coords": [
+        -23.09,
+        -47.218
+      ],
+      "local_origem": "simulado",
+      "distancia_km": 185,
+      "distancia_origem": "simulado",
+      "tempo_origem": "simulado",
+      "ponto_turistico": null,
+      "parada_realizada": false,
+      "foto": null,
+      "audio": null,
+      "recomendacao": {
+        "acao": "REGISTRAR PONTO TURÍSTICO",
+        "score": 0.9785049019607843,
+        "origem": "random_forest",
+        "modelo": "rf-sintetico-v1-149b87a451fb",
+        "entradas": {
+          "hora": 18,
+          "tempo_viagem_min": 205.0,
+          "distancia_km": 185,
+          "confianca_emocao": 0.8,
+          "paradas": 1,
+          "tempo_sem_parada_min": 25.0,
+          "classe_imagem": "ponto turístico",
+          "emocao": "ANIMADO"
+        },
+        "explicacao": {
+          "base": 0.20098611111111114,
+          "contribuicoes": {
+            "classe_imagem": 0.28125583583997255,
+            "confianca_emocao": 0.028134274016965118,
+            "distancia_km": 0.0004529863814240879,
+            "emocao": 0.4097862886442884,
+            "hora": -0.003945079235592302,
+            "paradas": -0.005836805134065146,
+            "tempo_sem_parada_min": 0.06840401608373108,
+            "tempo_viagem_min": -0.0007327257470505015
+          },
+          "metodo": "Decomposição local dos caminhos das árvores: base + contribuições = score. Não representa causalidade ou probabilidade calibrada."
+        }
+      },
+      "avisos": [
+        "Registro de demonstração/teste: o fluxo completo com áudio e imagem reais ainda não foi validado neste evento."
+      ],
+      "fluxo_completo_real": false
+    },
+    {
+      "id": "522250e7-ff0a-4ac2-878c-1f5f31c6623c",
+      "viagem_id": "81cf35f0-15e7-44db-aadf-318c98a098b1",
+      "horario": "2026-09-23T22:02:02.895651+00:00",
+      "comando": "preciso abastecer",
+      "transcricao": "rota viva, preciso abastecer",
+      "texto_origem": "digitado",
+      "emocao": {
+        "valor": "NEUTRO",
+        "score": 0.8,
+        "origem": "simulado",
+        "modelo": null
+      },
+      "imagem": {
+        "valor": "posto de combustível",
+        "score": null,
+        "origem": "simulado",
+        "modelo": null
+      },
+      "local": "Indaiatuba — SP",
+      "coords": [
+        -23.09,
+        -47.218
+      ],
+      "local_origem": "simulado",
+      "distancia_km": 345,
+      "distancia_origem": "simulado",
+      "tempo_origem": "simulado",
+      "ponto_turistico": null,
+      "parada_realizada": false,
+      "foto": null,
+      "audio": null,
+      "recomendacao": {
+        "acao": "AVALIAR ABASTECIMENTO",
+        "score": 0.43773580586080585,
+        "origem": "random_forest",
+        "modelo": "rf-sintetico-v1-149b87a451fb",
+        "entradas": {
+          "hora": 19,
+          "tempo_viagem_min": 235.0,
+          "distancia_km": 345,
+          "confianca_emocao": 0.8,
+          "paradas": 1,
+          "tempo_sem_parada_min": 55.0,
+          "classe_imagem": "posto de combustível",
+          "emocao": "NEUTRO"
+        },
+        "explicacao": {
+          "base": 0.20007870370370368,
+          "contribuicoes": {
+            "classe_imagem": 0.504399313608255,
+            "confianca_emocao": -0.036220172825775235,
+            "distancia_km": 0.06933013214254707,
+            "emocao": -0.022293870184642378,
+            "hora": -0.20053136369949878,
+            "paradas": -0.016222233331635017,
+            "tempo_sem_parada_min": -0.0031431060312401824,
+            "tempo_viagem_min": -0.05766159752090832
+          },
+          "metodo": "Decomposição local dos caminhos das árvores: base + contribuições = score. Não representa causalidade ou probabilidade calibrada."
+        }
+      },
+      "avisos": [
+        "Registro de demonstração/teste: o fluxo completo com áudio e imagem reais ainda não foi validado neste evento."
+      ],
+      "fluxo_completo_real": false
+    }
+  ],
+  "resumo": {
+    "distancia_total_km": 345,
+    "distancia_observacao": "Última distância informada; não é rastreamento contínuo de GPS.",
+    "paradas": 1,
+    "locais": 1,
+    "emocao_predominante": "NEUTRO",
+    "maior_trecho_km": 180,
+    "duracao_min": 235.0,
+    "registros": 4,
+    "fotos": [],
+    "modo": "demo"
+  }
+}

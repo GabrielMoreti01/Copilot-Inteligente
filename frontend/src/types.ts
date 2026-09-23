@@ -1,0 +1,6 @@
+export type Perception = {valor:string; score:number|null; origem:string; modelo:string|null};
+export type Trip = {id:string; nome:string; modo:'real'|'demo'; palavra:string; inicio:string; fim:string|null};
+export type Entry = {id:string; horario:string; comando:string; transcricao:string; texto_origem:string; local:string; coords:number[]; local_origem:string; distancia_km:number|null; distancia_origem:string; tempo_origem:string; ponto_turistico:string|null; parada_realizada:boolean; foto:string|null; audio:string|null; emocao:Perception; imagem:Perception; avisos:string[]; recomendacao:{acao:string; score:number; modelo:string; entradas:Record<string,string|number>; explicacao:{base:number; contribuicoes:Record<string,number>; metodo:string}}};
+export type Summary = {distancia_total_km:number|null; paradas:number; locais:number; emocao_predominante:string; maior_trecho_km:number|null; duracao_min:number; registros:number; fotos:Entry[]; modo:string};
+export type Detail = {viagem:Trip; registros:Entry[]; resumo:Summary};
+export type Config = {palavra:string; comandos:string[]; classes:string[]; cidades:Record<string,number[]>; modelos:Record<string,{disponivel:boolean; modelo:string; estado:string}>; random_forest:{disponivel:boolean; versao:string}; aviso:string};

@@ -1,0 +1,6 @@
+# Optional CPU inference; no downloads are performed by the server.
+-r requirements.txt
+torch>=2.6,<3
+transformers>=4.48,<5
+librosa>=0.10,<1
+soundfile>=0.12,<1
