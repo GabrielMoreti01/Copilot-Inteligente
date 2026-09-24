@@ -1,94 +1,308 @@
-# Rota Viva · Copiloto Inteligente de Viagem
+# Rota Viva - Copiloto Inteligente de Viagem
 
-Aplicação acadêmica integrada com **FastAPI + SQLite + React/TypeScript**, diário persistente e Random Forest treinado. O protótipo original foi preservado em `legacy/`.
+Projeto academico de um copiloto de viagem com **FastAPI**, **SQLite**, **React/TypeScript** e **Random Forest**.
 
-**Estado da entrega:** demonstração integrada funcional. Voz, emoção acústica e classificação de imagem possuem adaptadores locais, mas os pesos grandes não foram baixados nem validados neste computador corporativo. Não considerar o projeto acadêmico totalmente concluído antes de executar o fluxo real e revisar o dataset com o grupo. Consulte [matriz de requisitos](docs/REQUISITOS.md).
+Ele registra comandos de viagem, localizacao, imagem, emocao estimada, recomendacao do modelo e um diario de bordo com resumo final.
 
-## Abrir neste computador
+## Situacao real da pasta
 
-O ambiente `.venv`, o modelo RF e o build do frontend já foram preparados nesta pasta. No PowerShell, dentro do projeto:
+Ao baixar ou copiar este projeto, ele pode ainda nao estar pronto para rodar. Os itens abaixo sao gerados localmente e ficam fora do Git:
+
+- `.venv/`: ambiente Python.
+- `models/decision.joblib`: modelo Random Forest treinado.
+- `frontend/node_modules/`: dependencias do frontend.
+- `frontend/dist/`: build final da interface.
+- `runtime/`: banco SQLite e midias salvas durante o uso.
+
+Por isso, rode o preparo uma vez antes de iniciar o sistema.
+
+## Requisitos
+
+Instale ou tenha disponivel:
+
+- Python 3.11 ou 3.12.
+- Node.js 20.19+ ou 22.12+.
+- pnpm, recomendado para usar o `pnpm-lock.yaml`.
+
+Se nao tiver `pnpm`, da para usar `npm`, mas o caminho principal do projeto usa `pnpm`.
+
+## Preparo rapido no PowerShell
+
+Na pasta do projeto:
 
 ```powershell
-.venv\Scripts\python.exe main.py
+cd "C:\Users\Mateus Lago\Copilot-Inteligente"
+.\setup.ps1
 ```
 
-Abra **http://127.0.0.1:8000**. Encerre com **Ctrl+C** no terminal. Não precisa executar como administrador ou mudar a política de execução. `start.ps1` é uma alternativa que também carrega variáveis `COPILOTO_*` do `.env`.
+Se o PowerShell bloquear a execucao de script, rode:
 
-Comece por **Demonstração** e use os botões de comando. Nenhum dispositivo é ativado automaticamente. Tempo/distância/percepção simulados têm origem visível; a recomendação vem do RF treinado. Marque a confirmação de parada somente quando quiser registrar uma ação realizada.
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+```
 
-## Instalação reproduzível em outro computador
+Depois inicie:
 
-Requer Python 3.12 e Node.js 20.19+ ou 22.12+ disponíveis em ambiente autorizado. Não há instaladores globais automáticos, serviço do Windows, tarefas agendadas ou abertura de firewall.
+```powershell
+.\start.ps1
+```
+
+Se o `start.ps1` tambem for bloqueado:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\start.ps1
+```
+
+Abra no navegador:
+
+```text
+http://127.0.0.1:8000
+```
+
+Para encerrar, pressione `Ctrl+C` no terminal.
+
+## Preparo rapido no Bash
+
+Na pasta do projeto:
+
+```bash
+cd "/c/Users/Mateus Lago/Copilot-Inteligente"
+bash setup.sh
+```
+
+Depois inicie:
+
+```bash
+bash start.sh
+```
+
+Abra:
+
+```text
+http://127.0.0.1:8000
+```
+
+## Passo a passo manual no PowerShell
+
+Use esta parte se preferir fazer comando por comando.
+
+```powershell
+cd "C:\Users\Mateus Lago\Copilot-Inteligente"
+
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m scripts.train
+
+cd frontend
+pnpm install --frozen-lockfile
+pnpm build
+cd ..
+
+.\.venv\Scripts\python.exe main.py
+```
+
+Se o comando `py -3.12` nao existir no seu Windows, tente Python 3.11:
+
+```powershell
+py -3.11 -m venv .venv
+```
+
+Se o `py` nao existir, use um Python instalado:
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\python.exe -m pip install --cache-dir .cache/pip -r requirements.txt
-.venv\Scripts\python.exe -m scripts.train
-cd frontend
-pnpm install --frozen-lockfile --store-dir ../.cache/pnpm --ignore-scripts
-pnpm build
-cd ..
-.venv\Scripts\python.exe main.py
 ```
 
-`pnpm-lock.yaml` fixa as dependências do frontend; `requirements-lock.txt` registra todas as versões Python testadas (pode ser usado no lugar de requirements.txt). O comando `pnpm` precisa estar disponível; no ambiente Codex desta máquina foi usado o runtime já fornecido pela aplicação, sem instalação global. Para usar npm em outro ambiente, `npm install --ignore-scripts` e `npm run build` funcionam com package.json, mas geram outro lockfile e exigem nova validação.
+Se o `python` abrir a Microsoft Store ou der erro, instale o Python 3.12 ou 3.11 pelo site oficial, ou use o caminho completo do executavel Python.
 
-O servidor serve o build de produção e a API na mesma origem. Em desenvolvimento: `pnpm dev` no frontend e `python main.py` no backend; o proxy Vite encaminha `/api` sem habilitar CORS amplo.
+## Passo a passo manual no Bash
 
-## Testar e treinar
+```bash
+cd "/c/Users/Mateus Lago/Copilot-Inteligente"
+
+python3.12 -m venv .venv
+./.venv/Scripts/python.exe -m pip install -r requirements.txt
+./.venv/Scripts/python.exe -m scripts.train
+
+cd frontend
+pnpm install --frozen-lockfile
+pnpm build
+cd ..
+
+./.venv/Scripts/python.exe main.py
+```
+
+Em Linux/macOS, o caminho do Python do ambiente virtual costuma ser:
+
+```bash
+./.venv/bin/python
+```
+
+## Como usar a aplicacao
+
+1. Abra `http://127.0.0.1:8000`.
+2. Comece pela aba **Minha viagem**.
+3. Crie uma viagem em modo **Demonstração**.
+4. Use a palavra de ativacao padrao `rota viva`.
+5. Clique nos comandos prontos ou digite frases como:
+
+```text
+rota viva, como está o trecho
+rota viva, registrar parada
+rota viva, marcar ponto turístico
+rota viva, preciso abastecer
+```
+
+No modo demonstracao, tempo, distancia, cena e emocao podem ser simulados de forma identificada. A recomendacao vem do Random Forest treinado.
+
+## O que o sistema faz
+
+- Cria e lista viagens.
+- Espera uma palavra de ativacao configuravel.
+- Interpreta quatro comandos de viagem.
+- Registra horario, local, distancia e paradas.
+- Salva foto e audio quando enviados.
+- Usa Random Forest para recomendar uma acao.
+- Explica a recomendacao com as entradas e contribuicoes do modelo.
+- Mantem diario de bordo em SQLite.
+- Mostra resumo final com distancia, paradas, locais, emocao predominante e fotos.
+- Exporta diario e resumo em JSON.
+
+## Comandos de teste
+
+Backend:
 
 ```powershell
-.venv\Scripts\python.exe -m pytest -q -p no:cacheprovider
-.venv\Scripts\python.exe -m scripts.train
+.\.venv\Scripts\python.exe -m pytest -q -p no:cacheprovider
+```
+
+Frontend:
+
+```powershell
 cd frontend
 pnpm test
 pnpm build
+cd ..
 ```
 
-São 16 testes de backend e três de frontend. Treinamento atual: 2.400 exemplos sintéticos, oito entradas, cinco decisões, 600 exemplos de teste em grupos separados. Acurácia sintética: 96,0%, F1 macro: 0,9482. Isso não mede qualidade de voz/imagem nem desempenho em estrada.
+Treinar novamente o Random Forest:
 
-## Modelos de voz e imagem
+```powershell
+.\.venv\Scripts\python.exe -m scripts.train
+```
 
-Veja [MODELOS.md](docs/MODELOS.md) para instalação **opcional e explícita** dos modelos locais, licenças, formatos de áudio, limitações e roteiro de validação. Não há downloads de pesos quando o servidor inicia. Nenhum áudio ou imagem é enviado a serviços de IA externos.
+## Modelos reais de voz e imagem
 
-O navegador captura WAV PCM mono e imagem mediante permissão. A mesma amostra de áudio alimenta transcrição e emoção. A câmera do servidor nunca é acessada. Sem modelos, Configurações mostra indisponibilidade e os registros de teste ficam identificados como incompletos. O modo real permite cidade simulada, conforme o enunciado; GPS registra coordenadas, sem rastreamento contínuo. A distância real é informada manualmente, desde o início da viagem.
+O projeto tem adaptadores para modelos locais, mas eles sao opcionais e pesados:
 
-## Organização
+- Whisper tiny para transcricao de voz.
+- Wav2Vec2/SUPERB para emocao acustica.
+- CLIP para classificacao de imagem.
 
-- `copiloto_app/api.py`: contratos HTTP e orquestração dos eventos.
-- `storage.py` / `domain.py`: persistência transacional, validação e resumo.
-- `voice.py` / `perception.py`: interpretação dos comandos e adaptadores neurais.
-- `decision.py`: inferência RF e explicação local.
-- `scripts/train.py`: dados sintéticos, treino, avaliação e artefato.
-- `frontend/src`: interface responsiva e captura no navegador.
-- `runtime/`: SQLite e mídia local, ignorados no Git.
-- `data/cenarios_sinteticos.csv`: dados construídos e identificação do split.
-- `docs/`: dataset, modelos, requisitos, validação e apresentação.
+Instalacao opcional:
 
-## Contratos principais
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-ml.txt
+.\.venv\Scripts\python.exe -m scripts.download_models
+```
 
-Documentação interativa: http://127.0.0.1:8000/docs
+Sem esses pesos, o modo demo continua funcionando, mas o fluxo real completo com microfone, emocao e imagem ainda precisa ser validado em uma maquina autorizada.
 
-| Método | Rota | Função |
-|---|---|---|
-| GET | /api/config | Comandos, cidades, classes e disponibilidade |
-| POST / GET | /api/trips | Criar / listar viagens |
-| GET | /api/trips/{id} | Viagem, registros e resumo |
-| POST | /api/trips/{id}/events | Multipart: payload JSON, image opcional e audio opcional |
-| POST | /api/trips/{id}/end | Encerrar sem apagar o histórico |
-| GET | /api/media/{uuid.ext} | Consultar foto/áudio persistido |
+## Relacao com o PowerPoint
 
-Um comando sem ativação é ignorado e não cria entrada. JSON/mídia inválida retornam 422, tamanho excedido 413, viagem encerrada 409, modelo obrigatório ausente 503. Imagem até 5 MB/12 MP, áudio WAV mono PCM16 de 0,25 a 30 segundos até 3 MB, requisição inteira até aproximadamente 8 MB.
+O projeto atende a estrutura pedida no enunciado:
 
-Recomendações não incrementam paradas. O resumo calcula maior trecho a partir das distâncias acumuladas informadas e paradas confirmadas, incluindo o trecho final observado. Se faltar distância em uma parada, esse indicador fica indisponível. “Distância total” é a última medida registrada, não uma estimativa do percurso após o último registro.
+- Sistema integrado.
+- Palavra de ativacao.
+- Pelo menos quatro comandos.
+- Localizacao ou cidade simulada.
+- Classificacao de imagem com pelo menos quatro classes.
+- Random Forest com mais de cinco variaveis.
+- Mais de tres decisoes possiveis.
+- Diario de bordo.
+- Resumo final.
+- Explicacao da decisao.
 
-## Documentação acadêmica
+Para declarar a entrega como 100% validada, ainda e necessario testar o fluxo real com microfone, camera, GPS e modelos locais instalados.
 
-- [Dataset, rotulagem, resultados e explicação](docs/DATASET.md)
-- [Modelos e instalação opcional](docs/MODELOS.md)
-- [Matriz de requisitos e personalização](docs/REQUISITOS.md)
-- [Roteiro de apresentação](docs/DEMONSTRACAO.md)
-- [Verificações e limitações](docs/VALIDACAO.md)
-- [Exemplo de diário gerado pela API em modo demo](docs/exemplo_viagem.json)
+## Estrutura do projeto
 
-O grupo deve adaptar/validar a base sintética, confirmar a palavra de ativação com as outras equipes e coletar evidências reais de demonstração. Não há publicação, envio de dados da empresa ou acesso a documentos corporativos nesta implementação.
+- `main.py`: inicia o servidor local.
+- `start.ps1` / `start.sh`: iniciam o projeto depois do preparo.
+- `setup.ps1` / `setup.sh`: criam ambiente, instalam dependencias, treinam modelo e geram frontend.
+- `copiloto_app/api.py`: API e fluxo principal.
+- `copiloto_app/decision.py`: Random Forest e explicacao.
+- `copiloto_app/perception.py`: audio, imagem e adaptadores de IA local.
+- `copiloto_app/voice.py`: palavra de ativacao e comandos.
+- `frontend/src`: interface web.
+- `scripts/train.py`: gera dataset, metricas e modelo.
+- `docs/`: documentacao academica.
+- `legacy/`: prototipo antigo preservado.
+
+## Problemas comuns
+
+### `py -3.12` deu erro
+
+O Windows pode nao ter o lancador `py`, ou voce pode ter apenas Python 3.11. Tente:
+
+```powershell
+py -3.11 -m venv .venv
+```
+
+Ou:
+
+```powershell
+python -m venv .venv
+```
+
+Se tambem falhar, instale Python 3.12 ou 3.11, ou use o caminho completo do executavel.
+
+### `numpy==2.5.3` deu erro no Python 3.11
+
+Atualize o projeto para a versao atual deste README. O `requirements.txt` agora usa NumPy 2.4.x no Python 3.11 e NumPy 2.5.3 no Python 3.12+.
+
+Se o erro continuar, apague o ambiente quebrado e rode de novo:
+
+```powershell
+Remove-Item -Recurse -Force .venv
+.\setup.ps1
+```
+
+### `pip install` falhou
+
+Verifique se a internet esta liberada. Sem baixar as dependencias, o backend nao roda.
+
+### `pnpm` nao existe
+
+Instale pnpm ou use npm:
+
+```powershell
+cd frontend
+npm install
+npm run build
+cd ..
+```
+
+Usar npm pode gerar outro lockfile. Para entrega final, prefira pnpm.
+
+### Abriu a API, mas nao abriu a interface
+
+Falta gerar `frontend/dist`:
+
+```powershell
+cd frontend
+pnpm build
+cd ..
+```
+
+### O Random Forest esta indisponivel
+
+Falta gerar `models/decision.joblib`:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.train
+```
+
+## Observacao importante
+
+O dataset atual e sintetico e serve como base academica. Ele nao prova desempenho em viagens reais. Antes da apresentacao final, revise as regras, personalize com o grupo e faca uma demonstracao real ou deixe claro quando estiver usando modo demonstracao.
