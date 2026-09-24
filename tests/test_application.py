@@ -48,6 +48,12 @@ def test_word_boundaries():
     assert extrair_comando('rota viva marcar ponto turistico','rota viva') == 'marcar ponto turístico'
 
 
+def test_browser_speech_variations():
+    assert extrair_comando('rota vivo precisa abastecer','rota viva') == 'preciso abastecer'
+    assert extrair_comando('rota viva marcar ponto turístico rota vivo precisa abastecer','rota viva') == 'marcar ponto turístico'
+    assert extrair_comando('rota viva como ta o trecho','rota viva') == 'como está o trecho'
+
+
 def test_model_and_local_explanation(trained):
     row=dict(hora=12, tempo_viagem_min=160, distancia_km=190, confianca_emocao=.8, paradas=1,
              tempo_sem_parada_min=160, classe_imagem='posto de combustível', emocao='IRRITADO')

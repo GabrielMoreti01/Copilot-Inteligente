@@ -144,7 +144,7 @@ Em Linux/macOS, o caminho do Python do ambiente virtual costuma ser:
 2. Comece pela aba **Minha viagem**.
 3. Crie uma viagem em modo **Demonstração**.
 4. Use a palavra de ativacao padrao `rota viva`.
-5. Clique nos comandos prontos ou digite frases como:
+5. Clique em **Ativar microfone**, clique nos comandos prontos ou digite frases como:
 
 ```text
 rota viva, como está o trecho
@@ -154,6 +154,21 @@ rota viva, preciso abastecer
 ```
 
 No modo demonstracao, tempo, distancia, cena e emocao podem ser simulados de forma identificada. A recomendacao vem do Random Forest treinado.
+
+### Microfone sem Whisper local
+
+Para facilitar a demonstracao, o frontend tem dois modos de voz:
+
+- Com Whisper instalado: grava o audio e envia para o backend transcrever localmente.
+- Sem Whisper instalado: usa o reconhecimento de voz do navegador, em Chrome ou Edge, para transformar a fala em texto e enviar o comando.
+
+No modo sem Whisper, fale a palavra de ativacao junto do comando:
+
+```text
+rota viva registrar parada
+```
+
+Esse fallback e excelente para apresentar o fluxo amanha, mas a emocao da voz continua indisponivel enquanto os modelos locais nao forem instalados.
 
 ## O que o sistema faz
 
@@ -207,6 +222,8 @@ Instalacao opcional:
 ```
 
 Sem esses pesos, o modo demo continua funcionando, mas o fluxo real completo com microfone, emocao e imagem ainda precisa ser validado em uma maquina autorizada.
+
+Mesmo sem esses pesos, o botao de microfone pode funcionar em Chrome/Edge usando o reconhecimento de voz do navegador. Isso serve como fallback pratico para demonstracao de comando por voz.
 
 ## Relacao com o PowerPoint
 
